@@ -13,6 +13,8 @@ WriteMakefile(
     TEST_REQUIRES  => {
         'Test::More'            => 0,
         'Data::Dumper'          => 0,
+        'URI::Escape'           => 0,
+        'URI::Escape::XS'       => 0,
     },
     AUTHOR         => [
         'Gonzalo Diethelm (gonzus@cpan.org)',
@@ -41,6 +43,7 @@ sub cflags {
     my @cflags = split /\n/, $cflags;
 
     $self->{CCFLAGS} .= ' -Wall';                # Flag all warnings
+    $self->{CCFLAGS} .= ' -Werror';              # Warnings become errors
     $self->{CCFLAGS} .= ' -std=c89';             # Compile according to C89 standard
 
     # Need this define for localtime_r(), except on FreeBSD

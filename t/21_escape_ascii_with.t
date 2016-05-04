@@ -22,7 +22,8 @@ sub test_printable {
         'gonzo & ale',
         'gonzo % ale',
         'gonzo &% ale',
-        'I said this: you / them will "do it" NOW'
+        'I said this: you / them ~ us & me _will_ "do-it" NOW!',
+        # 'http://www.google.co.jp/search?q=小飼弾',  ## This will fail, it is UTF8
     );
     my @withs = (
         '&',
