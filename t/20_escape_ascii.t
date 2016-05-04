@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use feature qw{fc};
 
 use Test::More;
 use URI::Escape qw{ uri_escape };
@@ -23,7 +22,10 @@ sub test_printable {
         'gonzo & ale',
     );
     foreach my $string (@strings) {
-        is(escape_ascii($string), uri_escape($string), "escaping of printable string [$string] works");
+        my $escaped = escape_ascii($string);
+        $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
+        is($escaped, uri_escape($string),
+           "escaping of printable string [$string] works");
     }
 }
 
@@ -35,6 +37,9 @@ sub test_non_printable {
     foreach my $chars (@strings) {
         my $string = join('', map { chr($_) } @$chars);
         my $show = join(':', map { $_ } @$chars);
-        is(fc(escape_ascii($string)), fc(uri_escape($string)), "escaping of non-printable string [$show] works");
+        my $escaped = escape_ascii($string);
+        $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
+        is($escaped, uri_escape($string),
+           "escaping of non-printable string [$show] works");
     }
 }

@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use feature qw{fc};
 
 use Test::More;
 use URI::Escape qw{ uri_unescape };
@@ -24,6 +23,7 @@ sub test_strings {
         '%0a%0d',
     );
     foreach my $string (@strings) {
-        is(unescape_ascii($string), uri_unescape($string), "unescaping of string [$string] works");
+        my $unescaped = unescape_ascii($string);
+        is($unescaped, uri_unescape($string), "unescaping of string [$string] works");
     }
 }

@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use feature qw{fc};
 
 use Test::More;
 use URI::Escape qw{ uri_escape };
@@ -21,13 +20,21 @@ sub test_printable {
         '',
         'hello',
         'gonzo & ale',
+        'gonzo % ale',
+        'gonzo &% ale',
+        'I said this: you / them will "do it" NOW'
     );
     my @withs = (
         '&',
+        '%',
+        ': /"',
+        # '^a-zA-Z0-9._/:-',
     );
     foreach my $string (@strings) {
         foreach my $with (@withs) {
-            is(escape_ascii_with($string, $with), uri_escape($string, $with),
+            my $escaped = escape_ascii_with($string, $with);
+            $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
+            is($escaped, uri_escape($string, $with),
             "escaping of printable string [$string] with [$with] works");
         }
     }
@@ -40,12 +47,17 @@ sub test_non_printable {
     );
     my @withs = (
         '&',
+        '%',
+        ': /"',
+        # '^a-zA-Z0-9._/:-',
     );
     foreach my $chars (@strings) {
         foreach my $with (@withs) {
             my $string = join('', map { chr($_) } @$chars);
             my $show = join(':', map { $_ } @$chars);
-            is(fc(escape_ascii_with($string, $with)), fc(uri_escape($string, $with)),
+            my $escaped = escape_ascii_with($string, $with);
+            $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
+            is($escaped, uri_escape($string, $with),
                "escaping of non-printable string [$show] with [$with] works");
         }
     }
