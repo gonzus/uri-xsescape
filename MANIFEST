@@ -1,0 +1,19 @@
+escape.xs
+buffer.h
+Changes
+gmem.c
+gmem.h
+lib/URI/XSEscape.pm
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+ppport.h
+README.md
+uri_tables.h
+uri.c
+uri.h
+tools/bench.pl
+tools/encode/encode.c
+tools/encode/Makefile
+t/10_basic.t
