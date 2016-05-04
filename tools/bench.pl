@@ -93,7 +93,7 @@ sub benchmark_unescaping {
             name => 'URI::XSEscape',
             code => sub {
                 for(1..$iterations){
-                    URI::XSEscape::unescape_ascii($orig);
+                    URI::XSEscape::unescape($orig);
                 }
             },
         ),

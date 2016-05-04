@@ -54,7 +54,8 @@ Buffer* uri_encode(Buffer* src, int length,
     int s = src->pos;
     int t = tgt->pos;
     while (s < (src->pos + length)) {
-        char* v = uri_encode_tbl[(int)src->data[s]];
+        unsigned char u = (unsigned char) src->data[s];
+        char* v = uri_encode_tbl[(int)u];
 
         /* if current source character doesn't need to be encoded,
            just copy it to target*/
@@ -73,6 +74,8 @@ Buffer* uri_encode(Buffer* src, int length,
         t += 3;
         ++s;
     }
+    printf("Encoding done\n");
+    fflush(stdout);
 
     /* null-terminate target and return src as was left */
     src->pos = s;
@@ -108,7 +111,8 @@ Buffer* uri_encode_in(Buffer* src, int length,
     int s = src->pos;
     int t = tgt->pos;
     while (s < (src->pos + length)) {
-        char* v = uri_encode_tbl[(int)src->data[s]];
+        unsigned char u = (unsigned char) src->data[s];
+        char* v = uri_encode_tbl[(int)u];
 
         /* if current source character doesn't need to be encoded,
            just copy it to target*/
@@ -169,7 +173,8 @@ Buffer* uri_encode_not_in(Buffer* src, int length,
     int s = src->pos;
     int t = tgt->pos;
     while (s < (src->pos + length)) {
-        char* v = uri_encode_tbl[(int)src->data[s]];
+        unsigned char u = (unsigned char) src->data[s];
+        char* v = uri_encode_tbl[(int)u];
 
         /* if current source character doesn't need to be encoded,
            just copy it to target*/

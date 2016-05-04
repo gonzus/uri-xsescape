@@ -45,7 +45,7 @@ typedef struct Buffer {
     char* data;
     char fixed[  BUFFER_SIZEOF_DESIRED
                - 2*sizeof(unsigned int)
-               - 1*sizeof(char*)];
+               - 1*sizeof(char*) ];
 } Buffer;
 
 /*

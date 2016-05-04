@@ -81,7 +81,7 @@ escape_ascii_not_in(SV* string, SV* escape)
   OUTPUT: RETVAL
 
 SV*
-unescape_ascii(SV* string)
+unescape(SV* string)
   PREINIT:
     Buffer answer;
   CODE:
