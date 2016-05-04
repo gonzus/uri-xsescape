@@ -9,6 +9,8 @@ use URI::Escape     ();
 use URI::Escape::XS ();
 use URI::XSEscape   ();
 
+my $iterations = 1e4;
+
 exit main();
 
 sub main {
@@ -20,12 +22,7 @@ sub main {
 }
 
 sub benchmark_escaping_ascii {
-    my $iterations = 1e5;
-    my $bench = Dumbbench->new(
-        target_rel_precision => 0.005,
-        initial_runs         => 20,
-    );
-    # my $orig = 'http://www.google.co.jp/search?q=小飼弾';  ## This will fail, it is UTF8
+    my $bench = make_benchmark();
     my $orig = 'I said this: you / them ~ us & me _will_ "do-it" NOW!';
 
     $bench->add_instances(
@@ -60,15 +57,12 @@ sub benchmark_escaping_ascii {
 
     $bench->run;
     $bench->report;
+    printf("== DONE ==========\n");
 }
 
 sub benchmark_escaping_utf8 {
-    my $iterations = 1e5;
-    my $bench = Dumbbench->new(
-        target_rel_precision => 0.005,
-        initial_runs         => 20,
-    );
-    my $orig = 'http://www.google.co.jp/search?q=小飼弾';  ## This will fail, it is UTF8
+    my $bench = make_benchmark();
+    my $orig = 'http://www.google.co.jp/search?q=小飼弾';
 
     $bench->add_instances(
 
@@ -102,14 +96,11 @@ sub benchmark_escaping_utf8 {
 
     $bench->run;
     $bench->report;
+    printf("== DONE ==========\n");
 }
 
 sub benchmark_unescaping {
-    my $iterations = 1e5;
-    my $bench = Dumbbench->new(
-        target_rel_precision => 0.005,
-        initial_runs         => 20,
-    );
+    my $bench = make_benchmark();
     my $orig = 'I%20said%20this%3a%20you%20%2f%20them%20~%20us%20%26%20me%20_will_%20%22do-it%22%20NOW%21';
 
     $bench->add_instances(
@@ -144,4 +135,13 @@ sub benchmark_unescaping {
 
     $bench->run;
     $bench->report;
+    printf("== DONE ==========\n");
+}
+
+sub make_benchmark {
+    my $bench = Dumbbench->new(
+        target_rel_precision => 0.005,
+        initial_runs         => 20,
+    );
+    return $bench;
 }
