@@ -74,8 +74,6 @@ Buffer* uri_encode(Buffer* src, int length,
         t += 3;
         ++s;
     }
-    printf("Encoding done\n");
-    fflush(stdout);
 
     /* null-terminate target and return src as was left */
     src->pos = s;
