@@ -26,6 +26,7 @@ sub test_printable {
     );
     foreach my $string (@strings) {
         is(escape_ascii_standard($string), uri_escape($string), "escaping of printable string [$string] works");
+        printf("%s => %s\n", $string, escape_ascii_standard($string));
     }
 }
 
@@ -38,5 +39,6 @@ sub test_non_printable {
         my $string = join('', map { chr($_) } @$chars);
         my $show = join(':', map { $_ } @$chars);
         is(fc(escape_ascii_standard($string)), fc(uri_escape($string)), "escaping of non-printable string [$show] works");
+        printf("%s => %s\n", $show, escape_ascii_standard($string));
     }
 }

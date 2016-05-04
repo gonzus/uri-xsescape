@@ -31,3 +31,22 @@ escape_ascii_standard(SV* string)
     RETVAL = newSVpv(escaped.data, escaped.pos);
     buffer_fini(&escaped);
   OUTPUT: RETVAL
+
+SV*
+unescape_ascii(SV* string)
+  PREINIT:
+    Buffer unescaped;
+  CODE:
+    buffer_init(&unescaped, 0);
+    if (SvOK(string) && SvPOK(string)) {
+        STRLEN clen = 0;
+        const char* csrc = SvPV_const(string, clen);
+
+        Buffer source;
+        buffer_wrap(&source, csrc, clen);
+
+        uri_decode(&source, clen, &unescaped);
+    }
+    RETVAL = newSVpv(unescaped.data, unescaped.pos);
+    buffer_fini(&unescaped);
+  OUTPUT: RETVAL

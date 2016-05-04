@@ -12,6 +12,7 @@ XSLoader::load( 'URI::XSEscape', $VERSION );
 our @EXPORT_OK = qw{
     escape_ascii_standard
     escape_ascii_explicit
+    unescape_ascii
 };
 
 1;

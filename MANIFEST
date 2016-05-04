@@ -13,7 +13,6 @@ README.md
 uri_tables.h
 uri.c
 uri.h
-tools/bench.pl
-tools/encode/encode.c
-tools/encode/Makefile
 t/10_basic.t
+t/20_escape.t
+t/30_unescape.t
