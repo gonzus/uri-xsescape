@@ -33,24 +33,48 @@ escape_ascii(SV* string)
   OUTPUT: RETVAL
 
 SV*
-escape_ascii_with(SV* string, SV* to_escape)
+escape_ascii_in(SV* string, SV* escape)
   PREINIT:
     Buffer answer;
   CODE:
     buffer_init(&answer, 0);
-    if (SvOK(string)    && SvPOK(string) &&
-        SvOK(to_escape) && SvPOK(to_escape)) {
+    if (SvOK(string) && SvPOK(string) &&
+        SvOK(escape) && SvPOK(escape)) {
         STRLEN slen = 0;
         const char* sstr = SvPV_const(string, slen);
         STRLEN elen = 0;
-        const char* estr = SvPV_const(to_escape, elen);
+        const char* estr = SvPV_const(escape, elen);
 
         Buffer sbuf;
         buffer_wrap(&sbuf, sstr, slen);
         Buffer ebuf;
         buffer_wrap(&ebuf, estr, elen);
 
-        uri_encode_using(&sbuf, slen, &ebuf, &answer);
+        uri_encode_in(&sbuf, slen, &ebuf, &answer);
+    }
+    RETVAL = newSVpv(answer.data, answer.pos);
+    buffer_fini(&answer);
+  OUTPUT: RETVAL
+
+SV*
+escape_ascii_not_in(SV* string, SV* escape)
+  PREINIT:
+    Buffer answer;
+  CODE:
+    buffer_init(&answer, 0);
+    if (SvOK(string) && SvPOK(string) &&
+        SvOK(escape) && SvPOK(escape)) {
+        STRLEN slen = 0;
+        const char* sstr = SvPV_const(string, slen);
+        STRLEN elen = 0;
+        const char* estr = SvPV_const(escape, elen);
+
+        Buffer sbuf;
+        buffer_wrap(&sbuf, sstr, slen);
+        Buffer ebuf;
+        buffer_wrap(&ebuf, estr, elen);
+
+        uri_encode_not_in(&sbuf, slen, &ebuf, &answer);
     }
     RETVAL = newSVpv(answer.data, answer.pos);
     buffer_fini(&answer);

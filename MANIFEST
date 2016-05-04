@@ -15,6 +15,8 @@ uri.c
 uri.h
 t/10_basic.t
 t/20_escape_ascii.t
-t/21_escape_ascii_with.t
+t/21_escape_ascii_in.t
+t/22_escape_ascii_not_in.t
 t/30_unescape.t
 tools/bench.pl
+
