@@ -14,5 +14,6 @@ uri_tables.h
 uri.c
 uri.h
 t/10_basic.t
-t/20_escape.t
+t/20_escape_ascii.t
+t/21_escape_ascii_with.t
 t/30_unescape.t
