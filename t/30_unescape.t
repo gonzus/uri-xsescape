@@ -9,11 +9,9 @@ use URI::XSEscape qw{ unescape_ascii };
 exit main(@ARGV);
 
 sub main {
-    my @argv = @_;
-
     test_strings();
-    done_testing;
 
+    done_testing;
     return 0;
 }
 

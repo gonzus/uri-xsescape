@@ -10,8 +10,8 @@ our $VERSION = '0.000001';
 XSLoader::load( 'URI::XSEscape', $VERSION );
 
 our @EXPORT_OK = qw{
-    escape_ascii_standard
-    escape_ascii_explicit
+    escape_ascii
+    escape_ascii_with
     unescape_ascii
 };
 

@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdio.h>
 #include <string.h>
 #include "uri.h"
 
@@ -58,6 +59,60 @@ Buffer* uri_encode(Buffer* src, int length,
         /* if current source character doesn't need to be encoded,
            just copy it to target*/
         if (!v) {
+            tgt->data[t++] = src->data[s++];
+            continue;
+        }
+
+        /* copy encoded character from our table */
+        tgt->data[t+0] = '%';
+        tgt->data[t+1] = v[0];
+        tgt->data[t+2] = v[1];
+
+        /* we used up 3 characters (%XY) in target
+         * and 1 character from source */
+        t += 3;
+        ++s;
+    }
+
+    /* null-terminate target and return src as was left */
+    src->pos = s;
+    tgt->pos = t;
+    buffer_terminate(tgt);
+    return src;
+}
+
+Buffer* uri_encode_using(Buffer* src, int length,
+                         Buffer* escape,
+                         Buffer* tgt)
+{
+    if (length < 0) {
+        length = src->size;
+    }
+
+    /* check and maybe increase space in target */
+    buffer_ensure_unused(tgt, 3 * length);
+
+    /*
+    * Table has a 0 if that character doesn't need to be encoded;
+    * otherwise it has a string with the character encoded in hex digits.
+    */
+    char uri_encode_tbl[256][3];
+    for (int j = 0; j < 256; ++j) {
+        uri_encode_tbl[j][0] = 0;
+    }
+    for (int k = 0; k < escape->size; ++k) {
+        int e = escape->data[k];
+        sprintf(uri_encode_tbl[e], "%02x", e);
+    }
+
+    int s = src->pos;
+    int t = tgt->pos;
+    while (s < (src->pos + length)) {
+        char* v = uri_encode_tbl[(int)src->data[s]];
+
+        /* if current source character doesn't need to be encoded,
+           just copy it to target*/
+        if (!v[0]) {
             tgt->data[t++] = src->data[s++];
             continue;
         }

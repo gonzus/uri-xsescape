@@ -14,39 +14,63 @@ PROTOTYPES: DISABLE
 #################################################################
 
 SV*
-escape_ascii_standard(SV* string)
+escape_ascii(SV* string)
   PREINIT:
-    Buffer escaped;
+    Buffer answer;
   CODE:
-    buffer_init(&escaped, 0);
+    buffer_init(&answer, 0);
     if (SvOK(string) && SvPOK(string)) {
-        STRLEN clen = 0;
-        const char* csrc = SvPV_const(string, clen);
+        STRLEN slen = 0;
+        const char* sstr = SvPV_const(string, slen);
 
-        Buffer source;
-        buffer_wrap(&source, csrc, clen);
+        Buffer sbuf;
+        buffer_wrap(&sbuf, sstr, slen);
 
-        uri_encode(&source, clen, &escaped);
+        uri_encode(&sbuf, slen, &answer);
     }
-    RETVAL = newSVpv(escaped.data, escaped.pos);
-    buffer_fini(&escaped);
+    RETVAL = newSVpv(answer.data, answer.pos);
+    buffer_fini(&answer);
+  OUTPUT: RETVAL
+
+SV*
+escape_ascii_with(SV* string, SV* to_escape)
+  PREINIT:
+    Buffer answer;
+  CODE:
+    buffer_init(&answer, 0);
+    if (SvOK(string)    && SvPOK(string) &&
+        SvOK(to_escape) && SvPOK(to_escape)) {
+        STRLEN slen = 0;
+        const char* sstr = SvPV_const(string, slen);
+        STRLEN elen = 0;
+        const char* estr = SvPV_const(to_escape, elen);
+
+        Buffer sbuf;
+        buffer_wrap(&sbuf, sstr, slen);
+        Buffer ebuf;
+        buffer_wrap(&ebuf, estr, elen);
+
+        uri_encode_using(&sbuf, slen, &ebuf, &answer);
+    }
+    RETVAL = newSVpv(answer.data, answer.pos);
+    buffer_fini(&answer);
   OUTPUT: RETVAL
 
 SV*
 unescape_ascii(SV* string)
   PREINIT:
-    Buffer unescaped;
+    Buffer answer;
   CODE:
-    buffer_init(&unescaped, 0);
+    buffer_init(&answer, 0);
     if (SvOK(string) && SvPOK(string)) {
-        STRLEN clen = 0;
-        const char* csrc = SvPV_const(string, clen);
+        STRLEN slen = 0;
+        const char* sstr = SvPV_const(string, slen);
 
-        Buffer source;
-        buffer_wrap(&source, csrc, clen);
+        Buffer sbuf;
+        buffer_wrap(&sbuf, sstr, slen);
 
-        uri_decode(&source, clen, &unescaped);
+        uri_decode(&sbuf, slen, &answer);
     }
-    RETVAL = newSVpv(unescaped.data, unescaped.pos);
-    buffer_fini(&unescaped);
+    RETVAL = newSVpv(answer.data, answer.pos);
+    buffer_fini(&answer);
   OUTPUT: RETVAL

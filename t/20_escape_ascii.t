@@ -4,17 +4,15 @@ use feature qw{fc};
 
 use Test::More;
 use URI::Escape qw{ uri_escape };
-use URI::XSEscape qw{ escape_ascii_standard };
+use URI::XSEscape qw{ escape_ascii };
 
 exit main(@ARGV);
 
 sub main {
-    my @argv = @_;
-
     test_printable();
     test_non_printable();
-    done_testing;
 
+    done_testing;
     return 0;
 }
 
@@ -25,8 +23,7 @@ sub test_printable {
         'gonzo & ale',
     );
     foreach my $string (@strings) {
-        is(escape_ascii_standard($string), uri_escape($string), "escaping of printable string [$string] works");
-        printf("%s => %s\n", $string, escape_ascii_standard($string));
+        is(escape_ascii($string), uri_escape($string), "escaping of printable string [$string] works");
     }
 }
 
@@ -38,7 +35,6 @@ sub test_non_printable {
     foreach my $chars (@strings) {
         my $string = join('', map { chr($_) } @$chars);
         my $show = join(':', map { $_ } @$chars);
-        is(fc(escape_ascii_standard($string)), fc(uri_escape($string)), "escaping of non-printable string [$show] works");
-        printf("%s => %s\n", $show, escape_ascii_standard($string));
+        is(fc(escape_ascii($string)), fc(uri_escape($string)), "escaping of non-printable string [$show] works");
     }
 }
