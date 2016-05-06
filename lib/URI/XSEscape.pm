@@ -11,27 +11,17 @@ XSLoader::load( 'URI::XSEscape', $VERSION );
 
 our @EXPORT_OK = qw{
     uri_escape
+    uri_escape_utf8
     uri_unescape
-
-    escape_ascii
-    escape_ascii_in
-    escape_ascii_not_in
-    escape_utf8
-    unescape
 };
 
-sub escape_utf8 {
+sub uri_escape_utf8 {
     my ($text, $more) = @_;
     return undef unless defined($text);
 
     utf8::encode($text);
-    return escape_ascii($text) unless defined($more);
-
-    my $start = substr($more, 0, 1);
-    return escape_ascii_in($text, $more) unless $start eq '^';
-
-    $more = substr($more, 1);
-    return escape_ascii_not_in($text, $more);
+    return uri_escape($text) unless $more;
+    return uri_escape($text, $more);
 }
 
 1;

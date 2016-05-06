@@ -12,11 +12,7 @@ Buffer* uri_decode(Buffer* src, int length,
 
 Buffer* uri_encode(Buffer* src, int length,
                    Buffer* tgt);
-
-Buffer* uri_encode_in(Buffer* src, int length,
-                      Buffer* escape,
-                      Buffer* tgt);
-Buffer* uri_encode_not_in(Buffer* src, int length,
+Buffer* uri_encode_matrix(Buffer* src, int length,
                           Buffer* escape,
                           Buffer* tgt);
 

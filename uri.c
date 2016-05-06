@@ -8,6 +8,17 @@
  */
 #include "uri_tables.h"
 
+#define SET_ENCODE_VALUE(var, pos, flag) \
+    do { \
+        if (flag) { \
+            sprintf(var[pos], "%02x", pos); \
+        } else { \
+            var[pos][0] = 0; \
+        } \
+    } while (0)
+
+static void fill_matrix(const Buffer* escape, char matrix[256][3]);
+
 Buffer* uri_decode(Buffer* src, int length,
                    Buffer* tgt)
 {
@@ -82,9 +93,9 @@ Buffer* uri_encode(Buffer* src, int length,
     return src;
 }
 
-Buffer* uri_encode_in(Buffer* src, int length,
-                      Buffer* escape,
-                      Buffer* tgt)
+Buffer* uri_encode_matrix(Buffer* src, int length,
+                          Buffer* escape,
+                          Buffer* tgt)
 {
     if (length < 0) {
         length = src->size;
@@ -93,18 +104,8 @@ Buffer* uri_encode_in(Buffer* src, int length,
     /* check and maybe increase space in target */
     buffer_ensure_unused(tgt, 3 * length);
 
-    /*
-    * Table has a 0 if that character doesn't need to be encoded;
-    * otherwise it has a string with the character encoded in hex digits.
-    */
     char uri_encode_tbl[256][3];
-    for (int j = 0; j < 256; ++j) {
-        uri_encode_tbl[j][0] = 0;
-    }
-    for (int k = 0; k < escape->size; ++k) {
-        int e = escape->data[k];
-        sprintf(uri_encode_tbl[e], "%02x", e);
-    }
+    fill_matrix(escape, uri_encode_tbl);
 
     int s = src->pos;
     int t = tgt->pos;
@@ -137,64 +138,38 @@ Buffer* uri_encode_in(Buffer* src, int length,
     return src;
 }
 
-Buffer* uri_encode_not_in(Buffer* src, int length,
-                          Buffer* escape,
-                          Buffer* tgt)
+static void fill_matrix(const Buffer* escape, char matrix[256][3])
 {
-    if (length < 0) {
-        length = src->size;
-    }
-
-    /* check and maybe increase space in target */
-    buffer_ensure_unused(tgt, 3 * length);
-
     /*
     * Table has a 0 if that character doesn't need to be encoded;
     * otherwise it has a string with the character encoded in hex digits.
     */
-    char uri_encode_tbl[256][3];
-    for (int j = 0; j < 256; ++j) {
-        int e = j;
-        for (int k = 0; k < escape->size; ++k) {
-            if (j == escape->data[k]) {
-                e = 0;
-                break;
-            }
-        }
-        if (!e) {
-            uri_encode_tbl[j][0] = 0;
-        } else {
-            sprintf(uri_encode_tbl[j], "%02x", e);
-        }
+    int flag = 0;
+    int beg = escape->pos;
+    if (escape->data[beg] == '^') {
+        flag = 1;
+        ++beg;
     }
+    /* printf("Using flag %d, beg %d, size %d\n", flag, beg, escape->size); */
 
-    int s = src->pos;
-    int t = tgt->pos;
-    while (s < (src->pos + length)) {
-        unsigned char u = (unsigned char) src->data[s];
-        char* v = uri_encode_tbl[(int)u];
+    /* Set default values and flip flag */
+    for (int j = 0; j < 256; ++j) {
+        SET_ENCODE_VALUE(matrix, j, flag);
+    }
+    flag = !flag;
 
-        /* if current source character doesn't need to be encoded,
-           just copy it to target*/
-        if (!v[0]) {
-            tgt->data[t++] = src->data[s++];
+    for (int pos = beg; pos < escape->size; ++pos) {
+        if (escape->data[pos] != '-' ||
+            (pos == beg || pos == (escape->size - 1))) {
+            /* printf("Found char %c\n", escape->data[pos]); */
+            int p = escape->data[pos];
+            SET_ENCODE_VALUE(matrix, p, flag);
             continue;
         }
-
-        /* copy encoded character from our table */
-        tgt->data[t+0] = '%';
-        tgt->data[t+1] = v[0];
-        tgt->data[t+2] = v[1];
-
-        /* we used up 3 characters (%XY) in target
-         * and 1 character from source */
-        t += 3;
-        ++s;
+        /* printf("Found range %c %c\n", escape->data[pos-1] + 1, escape->data[pos+1]); */
+        for (int p = escape->data[pos-1] + 1; p <= escape->data[pos+1]; ++p) {
+            SET_ENCODE_VALUE(matrix, p, flag);
+        }
+        ++pos; /* need to skip over the '-' and the next character */
     }
-
-    /* null-terminate target and return src as was left */
-    src->pos = s;
-    tgt->pos = t;
-    buffer_terminate(tgt);
-    return src;
 }
