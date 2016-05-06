@@ -20,7 +20,7 @@ sub uri_escape_utf8 {
     return undef unless defined($text);
 
     utf8::encode($text);
-    return uri_escape($text) unless $more;
+    return uri_escape($text) unless defined($more);
     return uri_escape($text, $more);
 }
 
