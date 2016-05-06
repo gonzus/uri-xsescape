@@ -2,8 +2,8 @@ use strict;
 use warnings;
 
 use Test::More;
-use URI::Escape qw{ uri_unescape };
-use URI::XSEscape qw{ unescape };
+use URI::Escape;
+use URI::XSEscape;
 
 exit main(@ARGV);
 
@@ -24,7 +24,8 @@ sub test_strings {
         'I%20said%20this%3a%20you%20%2f%20them%20~%20us%20%26%20me%20_will_%20%22do-it%22%20NOW%21',
     );
     foreach my $string (@strings) {
-        my $unescaped = unescape($string);
-        is($unescaped, uri_unescape($string), "unescaping of string [$string] works");
+        my $unescaped = URI::XSEscape::uri_unescape($string);
+        my $wanted = URI::Escape::uri_unescape($string);
+        is($unescaped, $wanted, "unescaping of string [$string] works");
     }
 }

@@ -2,8 +2,8 @@ use strict;
 use warnings;
 
 use Test::More;
-use URI::Escape qw{ uri_escape };
-use URI::XSEscape qw{ escape_ascii };
+use URI::Escape;
+use URI::XSEscape;
 
 exit main(@ARGV);
 
@@ -24,9 +24,10 @@ sub test_printable {
         # 'http://www.google.co.jp/search?q=小飼弾',  ## This will fail, it is UTF8
     );
     foreach my $string (@strings) {
-        my $escaped = escape_ascii($string);
+        my $escaped = URI::XSEscape::uri_escape($string);
         $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
-        is($escaped, uri_escape($string),
+        my $wanted = URI::Escape::uri_escape($string);
+        is($escaped, $wanted,
            "escaping of printable string [$string] works");
     }
 }
@@ -39,9 +40,10 @@ sub test_non_printable {
     foreach my $chars (@strings) {
         my $string = join('', map { chr($_) } @$chars);
         my $show = join(':', map { $_ } @$chars);
-        my $escaped = escape_ascii($string);
+        my $escaped = URI::XSEscape::uri_escape($string);
         $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
-        is($escaped, uri_escape($string),
+        my $wanted = URI::Escape::uri_escape($string);
+        is($escaped, $wanted,
            "escaping of non-printable string [$show] works");
     }
 }
