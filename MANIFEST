@@ -17,6 +17,7 @@ t/10_basic.t
 t/20_escape_ascii.t
 t/21_escape_ascii_in.t
 t/22_escape_ascii_not_in.t
+t/23_escape_utf8.t
 t/30_unescape.t
 tools/bench.pl
 

@@ -15,7 +15,7 @@ exit main();
 
 sub main {
     benchmark_escaping_ascii();
-    benchmark_escaping_utf8();
+    # benchmark_escaping_utf8();
     benchmark_unescaping();
 
     return 0;
@@ -49,7 +49,7 @@ sub benchmark_escaping_ascii {
             name => 'URI::XSEscape',
             code => sub {
                 for(1..$iterations){
-                    URI::XSEscape::escape_ascii($orig);
+                    URI::XSEscape::uri_escape($orig);
                 }
             },
         ),
@@ -127,7 +127,7 @@ sub benchmark_unescaping {
             name => 'URI::XSEscape',
             code => sub {
                 for(1..$iterations){
-                    URI::XSEscape::unescape($orig);
+                    URI::XSEscape::uri_unescape($orig);
                 }
             },
         ),
