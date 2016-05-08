@@ -31,7 +31,6 @@ sub test_printable {
     foreach my $string (@strings) {
         foreach my $not_in (@not_ins) {
             my $escaped = URI::XSEscape::uri_escape($string, $not_in);
-            $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
             my $wanted = URI::Escape::uri_escape($string, $not_in);
             is($escaped, $wanted,
             "escaping of printable string [$string] not in [$not_in] works");
@@ -53,7 +52,6 @@ sub test_non_printable {
             my $string = join('', map { chr($_) } @$chars);
             my $show = join(':', map { $_ } @$chars);
             my $escaped = URI::XSEscape::uri_escape($string, $not_in);
-            $escaped =~ s/%([0-9a-zA-Z])([0-9a-zA-Z])/%\u$1\u$2/g;
             my $wanted = URI::Escape::uri_escape($string, $not_in);
             is($escaped, $wanted,
                "escaping of non-printable string [$show] not in [$not_in] works");

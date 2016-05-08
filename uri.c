@@ -11,7 +11,7 @@
 #define SET_ENCODE_VALUE(var, pos, flag) \
     do { \
         if (flag) { \
-            sprintf(var[pos], "%02x", pos); \
+            sprintf(var[pos], "%02X", pos); \
         } else { \
             var[pos][0] = 0; \
         } \
