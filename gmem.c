@@ -54,6 +54,8 @@ int gmem_new_called(const char* file,
                     int count,
                     long size)
 {
+  long total = 0;
+
   if (!var) {
     return 0;
   }
@@ -66,7 +68,7 @@ int gmem_new_called(const char* file,
     gmem_init();
   }
 
-  long total = size * count;
+  total = size * count;
 
 #if defined(GMEM_CHECK) && GMEM_CHECK >= 2
   fprintf(stderr, "=== MEM NEW %s %d %p %d %ld %ld ===\n",
@@ -83,6 +85,8 @@ int gmem_del_called(const char* file,
                     int count,
                     long size)
 {
+  long total = 0;
+
   if (!var) {
     return 0;
   }
@@ -98,7 +102,7 @@ int gmem_del_called(const char* file,
     gmem_init();
   }
 
-  long total = size * count;
+  total = size * count;
 
 #if defined(GMEM_CHECK) && GMEM_CHECK >= 2
   fprintf(stderr, "=== MEM DEL %s %d %p %d %ld %ld ===\n",

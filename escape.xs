@@ -17,6 +17,13 @@ SV*
 uri_escape(SV* string, ...)
   PREINIT:
     Buffer answer;
+    STRLEN slen = 0;
+    const char* sstr = 0;
+    Buffer sbuf;
+    SV* escape = 0;
+    STRLEN elen = 0;
+    const char* estr = 0;
+    Buffer ebuf;
   CODE:
     buffer_init(&answer, 0);
     do {
@@ -29,10 +36,7 @@ uri_escape(SV* string, ...)
             break;
         }
 
-        STRLEN slen = 0;
-        const char* sstr = SvPV_const(string, slen);
-
-        Buffer sbuf;
+        sstr = SvPV_const(string, slen);
         buffer_wrap(&sbuf, sstr, slen);
 
         if (items == 1) {
@@ -40,16 +44,13 @@ uri_escape(SV* string, ...)
             break;
         }
 
-        SV* escape = ST(1);
+        escape = ST(1);
         if (!escape || !SvOK(escape) || !SvPOK(escape)) {
             croak("uri_escape's optional second argument must be a string");
             break;
         }
 
-        STRLEN elen = 0;
-        const char* estr = SvPV_const(escape, elen);
-
-        Buffer ebuf;
+        estr = SvPV_const(escape, elen);
         buffer_wrap(&ebuf, estr, elen);
 
         uri_encode_matrix(&sbuf, slen, &ebuf, &answer);
@@ -62,6 +63,9 @@ SV*
 uri_unescape(SV* string)
   PREINIT:
     Buffer answer;
+    STRLEN slen = 0;
+    const char* sstr = 0;
+    Buffer sbuf;
   CODE:
     buffer_init(&answer, 0);
     do {
@@ -70,10 +74,7 @@ uri_unescape(SV* string)
             break;
         }
 
-        STRLEN slen = 0;
-        const char* sstr = SvPV_const(string, slen);
-
-        Buffer sbuf;
+        sstr = SvPV_const(string, slen);
         buffer_wrap(&sbuf, sstr, slen);
 
         uri_decode(&sbuf, slen, &answer);

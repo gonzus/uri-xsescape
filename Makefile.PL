@@ -42,14 +42,15 @@ sub cflags {
     my $cflags = $self->SUPER::cflags(@_);
     my @cflags = split /\n/, $cflags;
 
+    $self->{CCFLAGS} .= ' -std=c89';             # Compile according to C89 standard
+    $self->{CCFLAGS} .= ' -pedantic';            # Make sure non-C89 constructs are flagged
     $self->{CCFLAGS} .= ' -Wall';                # Flag all warnings
     $self->{CCFLAGS} .= ' -Werror';              # Warnings become errors
-    $self->{CCFLAGS} .= ' -std=c89';             # Compile according to C89 standard
 
-    # Need this define for localtime_r(), except on FreeBSD
-    if ($^O ne 'freebsd') {
-        $self->{CCFLAGS} .= ' -D_XOPEN_SOURCE=700';
-    }
+    # Turn off these warnings, they appear in Perl library code
+    $self->{CCFLAGS} .= ' -Wno-gnu-statement-expression';
+    $self->{CCFLAGS} .= ' -Wno-variadic-macros';
+    $self->{CCFLAGS} .= ' -Wno-long-long';
 
     foreach (@cflags) {
         $_ = "CCFLAGS = $self->{CCFLAGS}" if /^CCFLAGS/;
