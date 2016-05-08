@@ -45,12 +45,13 @@ sub cflags {
     $self->{CCFLAGS} .= ' -std=c89';             # Compile according to C89 standard
     $self->{CCFLAGS} .= ' -pedantic';            # Make sure non-C89 constructs are flagged
     $self->{CCFLAGS} .= ' -Wall';                # Flag all warnings
-    $self->{CCFLAGS} .= ' -Werror';              # Warnings become errors
 
-    # Turn off these warnings, they appear in Perl library code
-    $self->{CCFLAGS} .= ' -Wno-gnu-statement-expression';
-    $self->{CCFLAGS} .= ' -Wno-variadic-macros';
-    $self->{CCFLAGS} .= ' -Wno-long-long';
+#    $self->{CCFLAGS} .= ' -Werror';              # Warnings become errors
+#
+#    # Turn off these warnings, they appear in Perl library code
+#    $self->{CCFLAGS} .= ' -Wno-gnu-statement-expression';
+#    $self->{CCFLAGS} .= ' -Wno-variadic-macros';
+#    $self->{CCFLAGS} .= ' -Wno-long-long';
 
     foreach (@cflags) {
         $_ = "CCFLAGS = $self->{CCFLAGS}" if /^CCFLAGS/;
