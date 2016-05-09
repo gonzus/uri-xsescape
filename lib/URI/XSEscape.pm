@@ -24,15 +24,16 @@ sub uri_escape_utf8 {
     return uri_escape($text, $more);
 }
 
-# TODO: check if this is how we overwrite URI::Escape methods
+# TODO: this overwrites URI::Escape methods, but unconditionally,
+# so it is now impossible to benchmark the two...
 
-# eval {
-#     require URI::Escape;
-#
-#     *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
-#     *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
-#     *URI::Escape::uri_unescape         = *URI::XSEscape::uri_unescape;
-# };
+eval {
+    require URI::Escape;
+
+    *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
+    *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
+    *URI::Escape::uri_unescape         = *URI::XSEscape::uri_unescape;
+};
 
 1;
 
@@ -135,5 +136,3 @@ faster, but the difference is not that noticeable.
 =item * p5pclub
 
 =back
-
-__END__
