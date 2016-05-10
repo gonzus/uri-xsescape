@@ -28,11 +28,16 @@ sub uri_escape_utf8 {
 # so it is now impossible to benchmark the two...
 
 eval {
-    require URI::Escape;
+    # ENV{'PERL_URI_XSESCAPE'} = undef # yes
+    # ENV{'PERL_URI_XSESCAPE'} = 1     # yes
+    # ENV{'PERL_URI_XSESCAPE'} = 0     # no
+    if ( ! defined $ENV{'PERL_URI_XSESCAPE'} || $ENV{'PERL_URI_XSESCAPE'} ) {
+        require URI::Escape;
 
-    *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
-    *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
-    *URI::Escape::uri_unescape         = *URI::XSEscape::uri_unescape;
+        *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
+        *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
+        *URI::Escape::uri_unescape         = *URI::XSEscape::uri_unescape;
+    }
 };
 
 1;
