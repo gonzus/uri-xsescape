@@ -47,7 +47,8 @@ __END__
 
 =head1 NAME
 
-URI::XSEscape - Fast XS URI-escaping library, replacing URI::Escape.
+L<URI::XSEscape> - Fast XS URI-escaping library, replacing
+L<URI::Escape>.
 
 =head1 VERSION
 
@@ -63,10 +64,16 @@ Version 0.000007
 =head1 DESCRIPTION
 
 By loading L<URI::XSEscape> anywhere, you replace any usage of
-L<URI::Escape> with a fast C implementation.
+L<URI::Escape> with a faster C implementation.
 
 You can continue to use L<URI::Escape> and any other module that
 depends on it just like you did before. It's just faster now.
+
+When you have loaded L<URI::XSEscape>, you can control the
+overriding of L<URI::Escape>'s methods using the environment
+variable C<PERL_URI_XSESCAPE>.  Only if it is explicitly set to
+zero, the methods in L<URI::Escape> will not be overwritten.
+This is how the benchmark below is run.
 
 =head1 METHODS/ATTRIBUTES
 
@@ -83,9 +90,9 @@ attributes are.
 
 =head1 BENCHMARKS
 
-For the common case, which is calling uri_escape with a single
-argument, and calling uri_unescape, URI::XSEscape runs between
-25 and 34 times faster than URI::Escape. The other cases are also
+For the common case, which is calling C<uri_escape> with a single
+argument, and calling C<uri_unescape>, L<URI::XSEscape> runs between
+25 and 34 times faster than L<URI::Escape>. The other cases are also
 faster, but the difference is not that noticeable.
 
     $ PERL_URI_XSESCAPE=0 perl -Iblib/lib -Iblib/arch tools/bench.pl
@@ -133,8 +140,10 @@ faster, but the difference is not that noticeable.
 
 =over 4
 
-=item * Brian Fraser
+=item * Gisle Aas, for L<URI::Escape>.
 
-=item * p5pclub
+=item * Brian Fraser, for the early work.
+
+=item * p5pclub, for the inspiration.
 
 =back
