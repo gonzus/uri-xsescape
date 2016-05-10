@@ -28,11 +28,16 @@ sub uri_escape_utf8 {
 # so it is now impossible to benchmark the two...
 
 eval {
-    require URI::Escape;
+    # ENV{'PERL_URI_XSESCAPE'} = undef # yes
+    # ENV{'PERL_URI_XSESCAPE'} = 1     # yes
+    # ENV{'PERL_URI_XSESCAPE'} = 0     # no
+    if ( ! defined $ENV{'PERL_URI_XSESCAPE'} || $ENV{'PERL_URI_XSESCAPE'} ) {
+        require URI::Escape;
 
-    *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
-    *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
-    *URI::Escape::uri_unescape         = *URI::XSEscape::uri_unescape;
+        *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
+        *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
+        *URI::Escape::uri_unescape         = *URI::XSEscape::uri_unescape;
+    }
 };
 
 1;
@@ -112,9 +117,9 @@ faster, but the difference is not that noticeable.
     URI::XSEscape 1098901/s         2612%            --
 
     -- uri_unescape
-                        Rate     URI::Escape URI::XS::Escape   URI::XSEscape
+                        Rate     URI::Escape URI::Escape::XS   URI::XSEscape
     URI::Escape       74019/s              --            -93%            -96%
-    URI::XS::Escape 1086957/s           1368%              --            -43%
+    URI::Escape::XS 1086957/s           1368%              --            -43%
     URI::XSEscape   1923077/s           2498%             77%              --
 
 =head1 AUTHORS

@@ -55,7 +55,7 @@ my @cases = (
         cmpthese(
             1000000 => {
                 'URI::Escape'     => sub {     URI::Escape::uri_unescape($orig_code) },
-                'URI::XS::Escape' => sub { URI::Escape::XS::uri_unescape($orig_code) },
+                'URI::Escape::XS' => sub { URI::Escape::XS::uri_unescape($orig_code) },
                 'URI::XSEscape'   => sub {   URI::XSEscape::uri_unescape($orig_code) },
             },
         );
