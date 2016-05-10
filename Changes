@@ -1,3 +1,9 @@
+0.000007    2016-05-10
+            * Control wether we override URI::Escape functions using
+              the environment variable PERL_URI_XSESCAPE; if it is
+              set to 0, we won't override. Thanks SawyerX (dutifully
+              added as author).
+
 0.000006    2016-05-08
             * Keep playing the compiler flag game.
 

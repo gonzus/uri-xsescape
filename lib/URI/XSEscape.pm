@@ -6,7 +6,7 @@ use warnings;
 use XSLoader;
 use parent 'Exporter';
 
-our $VERSION = '0.000006';
+our $VERSION = '0.000007';
 XSLoader::load( 'URI::XSEscape', $VERSION );
 
 our @EXPORT_OK = qw{
@@ -23,9 +23,6 @@ sub uri_escape_utf8 {
     return uri_escape($text) unless defined($more);
     return uri_escape($text, $more);
 }
-
-# TODO: this overwrites URI::Escape methods, but unconditionally,
-# so it is now impossible to benchmark the two...
 
 eval {
     # ENV{'PERL_URI_XSESCAPE'} = undef # yes
@@ -54,7 +51,7 @@ URI::XSEscape - Fast XS URI-escaping library, replacing URI::Escape.
 
 =head1 VERSION
 
-Version 0.000006
+Version 0.000007
 
 =head1 SYNOPSIS
 
@@ -91,7 +88,7 @@ argument, and calling uri_unescape, URI::XSEscape runs between
 25 and 34 times faster than URI::Escape. The other cases are also
 faster, but the difference is not that noticeable.
 
-    $ perl -Iblib/lib -Iblib/arch tools/bench.pl
+    $ PERL_URI_XSESCAPE=0 perl -Iblib/lib -Iblib/arch tools/bench.pl
     URI::Escape 3.31 / URI::Escape::XS 0.13 / URI::XSEscape 0.000004
     -- uri_escape
                         Rate     URI::Escape URI::Escape::XS   URI::XSEscape
@@ -128,6 +125,8 @@ faster, but the difference is not that noticeable.
 
 =item * Gonzalo Diethelm C<< gonzus AT cpan DOT org >>
 
+=item * Sawyer X C<< xsawyerx AT cpan DOT org >>
+
 =back
 
 =head1 THANKS
@@ -135,8 +134,6 @@ faster, but the difference is not that noticeable.
 =over 4
 
 =item * Brian Fraser
-
-=item * Sawyer X C<< xsawyerx AT cpan DOT org >>
 
 =item * p5pclub
 
