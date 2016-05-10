@@ -112,9 +112,9 @@ faster, but the difference is not that noticeable.
     URI::XSEscape 1098901/s         2612%            --
 
     -- uri_unescape
-                        Rate     URI::Escape URI::XS::Escape   URI::XSEscape
+                        Rate     URI::Escape URI::Escape::XS   URI::XSEscape
     URI::Escape       74019/s              --            -93%            -96%
-    URI::XS::Escape 1086957/s           1368%              --            -43%
+    URI::Escape::XS 1086957/s           1368%              --            -43%
     URI::XSEscape   1923077/s           2498%             77%              --
 
 =head1 AUTHORS
