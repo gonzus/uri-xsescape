@@ -4,20 +4,20 @@
 #include "uri.h"
 
 /*
- * This file is generated automatically with program "encode".
+ * The next file is generated automatically with program "encode".
  */
 #include "uri_tables.h"
 
 #define SET_ENCODE_VALUE(var, pos, flag) \
     do { \
         if (flag) { \
-            sprintf(var[pos], "%02X", pos); \
+            sprintf(var[pos], "%%%02X", pos); \
         } else { \
             var[pos][0] = 0; \
         } \
     } while (0)
 
-static void fill_matrix(const Buffer* escape, char matrix[256][3]);
+static void fill_matrix(const Buffer* escape, char matrix[256][4]);
 
 Buffer* uri_decode(Buffer* src, int length,
                    Buffer* tgt)
@@ -78,9 +78,7 @@ Buffer* uri_encode(Buffer* src, int length,
         }
 
         /* copy encoded character from our table */
-        tgt->data[t+0] = '%';
-        tgt->data[t+1] = v[0];
-        tgt->data[t+2] = v[1];
+        memcpy(tgt->data + t, v, 3);
 
         /* we used up 3 characters (%XY) in target
          * and 1 character from source */
@@ -101,7 +99,7 @@ Buffer* uri_encode_matrix(Buffer* src, int length,
 {
     int s = src->pos;
     int t = tgt->pos;
-    char uri_encode_tbl[256][3];
+    char uri_encode_tbl[256][4];
 
     if (length < 0) {
         length = src->size;
@@ -124,9 +122,7 @@ Buffer* uri_encode_matrix(Buffer* src, int length,
         }
 
         /* copy encoded character from our table */
-        tgt->data[t+0] = '%';
-        tgt->data[t+1] = v[0];
-        tgt->data[t+2] = v[1];
+        memcpy(tgt->data + t, v, 3);
 
         /* we used up 3 characters (%XY) in target
          * and 1 character from source */
@@ -141,7 +137,7 @@ Buffer* uri_encode_matrix(Buffer* src, int length,
     return src;
 }
 
-static void fill_matrix(const Buffer* escape, char matrix[256][3])
+static void fill_matrix(const Buffer* escape, char matrix[256][4])
 {
     /*
     * Table has a 0 if that character doesn't need to be encoded;
