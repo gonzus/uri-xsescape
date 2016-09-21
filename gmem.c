@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <unistd.h>
 #include "gmem.h"
 
 int gmem_unused = 0;
@@ -23,8 +22,7 @@ void gmem_init()
   gmem_new = gmem_del = 0;
 
 #if defined(GMEM_CHECK) && GMEM_CHECK >= 1
-  fprintf(stderr, "=== MEM BEG {%lu} %ld %ld ===\n",
-          (unsigned long) getpid(), gmem_new, gmem_del);
+  fprintf(stderr, "=== MEM BEG %ld %ld ===\n", gmem_new, gmem_del);
 #endif
 }
 
@@ -35,14 +33,11 @@ void gmem_fini(void)
   }
 
 #if defined(GMEM_CHECK) && GMEM_CHECK >= 1
-  fprintf(stderr, "=== MEM END {%lu} %ld %ld ===\n",
-          (unsigned long) getpid(), gmem_new, gmem_del);
+  fprintf(stderr, "=== MEM END %ld %ld ===\n", gmem_new, gmem_del);
   if (gmem_new == gmem_del) {
-    fprintf(stderr, "=== MEM OK {%lu} ===\n",
-          (unsigned long) getpid());
+    fprintf(stderr, "=== MEM OK ===\n");
   } else {
-    fprintf(stderr, "=== MEM ERR {%lu} %ld BYTES ===\n",
-          (unsigned long) getpid(), gmem_new - gmem_del);
+    fprintf(stderr, "=== MEM ERR %ld BYTES ===\n", gmem_new - gmem_del);
   }
 #endif
   gmem_inited = 0;
