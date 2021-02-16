@@ -21,13 +21,20 @@ sub test_printable {
         'hello',
         'gonzo & ale',
         'I said this: you / them ~ us & me _will_ "do-it" NOW!',
-        # 'http://www.google.co.jp/search?q=小飼弾',  ## This will fail, it is UTF8
+        'http://www.google.co.jp/search?q=小飼弾',
     );
     foreach my $string (@strings) {
+        my $upgraded = $string;
+        utf8::upgrade($upgraded);
+
         my $escaped = URI::XSEscape::uri_escape($string);
         my $wanted = URI::Escape::uri_escape($string);
         is($escaped, $wanted,
            "escaping of printable string [$string] works");
+
+        my $escaped_upgraded = URI::XSEscape::uri_escape($upgraded);
+        is($escaped_upgraded, $escaped,
+           "… and upgraded form is escaped the same way");
     }
 }
 
