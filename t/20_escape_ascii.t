@@ -2,6 +2,9 @@ use strict;
 use warnings;
 
 use Test::More;
+
+BEGIN { $ENV{'PERL_URI_XSESCAPE'} = 0 }
+
 use URI::Escape;
 use URI::XSEscape;
 
@@ -10,6 +13,7 @@ exit main(@ARGV);
 sub main {
     test_printable();
     test_non_printable();
+    test_numbers();
 
     done_testing;
     return 0;
@@ -26,8 +30,26 @@ sub test_printable {
     foreach my $string (@strings) {
         my $escaped = URI::XSEscape::uri_escape($string);
         my $wanted = URI::Escape::uri_escape($string);
+        $wanted =~ tr<A-F><a-f>;
         is($escaped, $wanted,
            "escaping of printable string [$string] works");
+    }
+}
+
+sub test_numbers {
+    my @nums = (
+        0,
+        1,
+        0xffff,
+        1.2345,
+    );
+
+    for my $num (@nums) {
+        my $escaped = URI::XSEscape::uri_escape(q<> . $num);
+        my $wanted = URI::Escape::uri_escape($num);
+        $wanted =~ tr<A-F><a-f>;
+        is($escaped, $wanted,
+           "escaping of number $num works");
     }
 }
 
@@ -42,6 +64,7 @@ sub test_non_printable {
         my $show = join(':', map { $_ } @$chars);
         my $escaped = URI::XSEscape::uri_escape($string);
         my $wanted = URI::Escape::uri_escape($string);
+        $wanted =~ tr<A-F><a-f>;
         is($escaped, $wanted,
            "escaping of non-printable string [$show] works");
     }

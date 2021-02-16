@@ -27,8 +27,8 @@ uri_escape(SV* string, ...)
   CODE:
     buffer_init(&answer, 0);
     do {
-        if (!string || !SvOK(string) || !SvPOK(string)) {
-            croak("uri_escape's mandatory first argument must be a string");
+        if (!string || !SvOK(string) || SvROK(string)) {
+            croak("uri_escape's mandatory first argument must be a string or number");
             break;
         }
         if (items > 2) {
