@@ -3,25 +3,116 @@ package URI::XSEscape;
 use strict;
 use warnings;
 
-use XSLoader;
+use Carp ();
 use parent 'Exporter';
+use XSLoader;
 
 our $VERSION = '0.002000';
-XSLoader::load( 'URI::XSEscape', $VERSION );
 
 our @EXPORT_OK = qw{
+    %escapes
     uri_escape
     uri_escape_utf8
     uri_unescape
 };
 
-sub uri_escape_utf8 {
+my ($xs_uri_escape, $xs_uri_escape_utf8, $xs_uri_unescape);
+my ($orig_uri_escape, $orig_uri_escape_utf8, $orig_uri_unescape);
+our %escapes;
+
+sub import {
+    my $class = shift;
+    if (grep +( $_ eq '%escapes' ), @_) {
+        _capture_uri_escape_orig();
+    }
+    $class->export_to_level(1, $class, @_);
+}
+
+sub _byte_escape {
+    my ($text) = @_;
+    utf8::is_utf8($text)
+        or return $xs_uri_escape->($text);
+
+    if ($text =~ /([^\x00-\xFF])/) {
+        Carp::croak(
+            sprintf "Can't escape \\x{%04X}, try uri_escape_utf8() instead",
+            ord $1
+        );
+    }
+
+    my $bytes = $text;
+    utf8::downgrade($bytes, 1);
+    return $xs_uri_escape->($bytes);
+}
+
+sub _capture_uri_escape_orig {
+    return if $orig_uri_escape && $orig_uri_escape_utf8 && $orig_uri_unescape;
+    require URI::Escape;
+    $orig_uri_escape = \&URI::Escape::uri_escape;
+    $orig_uri_escape_utf8 = \&URI::Escape::uri_escape_utf8;
+    $orig_uri_unescape = \&URI::Escape::uri_unescape;
+    {
+        no warnings 'redefine';
+        *URI::XSEscape::escapes = \%URI::Escape::escapes;
+    }
+}
+
+sub _uri_escape_wrapper {
+    my ($text, $patn) = @_;
+
+    defined $text
+        or return undef;
+
+    @_ > 2
+        and Carp::croak("uri_escape called with too many arguments");
+
+    defined $patn
+        or return _byte_escape($text);
+
+    _capture_uri_escape_orig();
+    return $orig_uri_escape->($text, $patn);
+}
+
+sub _uri_escape_utf8_wrapper {
     my ($text, $more) = @_;
-    return undef unless defined($text);
+    defined $text
+        or return undef;
+
+    @_ > 2
+        and Carp::croak("uri_escape called with too many arguments");
+
+    if (defined $more) {
+        _capture_uri_escape_orig();
+        return $orig_uri_escape_utf8->($text, $more);
+    }
 
     utf8::encode($text);
-    return uri_escape($text) unless defined($more);
-    return uri_escape($text, $more);
+    return $xs_uri_escape->($text);
+}
+
+sub _uri_unescape_wrapper {
+    my ($text) = @_;
+
+    if ( @_ > 1 || wantarray ) {
+        _capture_uri_escape_orig();
+        return $orig_uri_unescape->(@_);
+    }
+
+    defined $text
+        or return undef;
+
+    return $xs_uri_unescape->($text);
+}
+
+XSLoader::load( 'URI::XSEscape', $VERSION );
+$xs_uri_escape = \&URI::XSEscape::uri_escape;
+$xs_uri_escape_utf8 = \&URI::XSEscape::uri_escape_utf8;
+$xs_uri_unescape = \&URI::XSEscape::uri_unescape;
+{
+    no warnings 'redefine';
+    *URI::XSEscape::uri_escape = \&_uri_escape_wrapper;
+    *URI::XSEscape::uri_escape_utf8 = \&_uri_escape_utf8_wrapper;
+    *URI::XSEscape::uri_unescape = \&_uri_unescape_wrapper;
 }
 
 eval {
@@ -29,7 +120,7 @@ eval {
     # ENV{'PERL_URI_XSESCAPE'} = 1     # yes
     # ENV{'PERL_URI_XSESCAPE'} = 0     # no
     if ( ! defined $ENV{'PERL_URI_XSESCAPE'} || $ENV{'PERL_URI_XSESCAPE'} ) {
-        require URI::Escape;
+        _capture_uri_escape_orig();
 
         *URI::Escape::uri_escape           = *URI::XSEscape::uri_escape;
         *URI::Escape::uri_escape_utf8      = *URI::XSEscape::uri_escape_utf8;
