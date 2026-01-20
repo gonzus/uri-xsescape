@@ -33,7 +33,6 @@ sub test_printable {
 
         my $escaped = URI::XSEscape::uri_escape($string);
         my $wanted = URI::Escape::uri_escape($string);
-        $wanted =~ tr<A-F><a-f>;
         is($escaped, $wanted,
            "escaping of printable string [$string] works");
 
@@ -54,7 +53,6 @@ sub test_numbers {
     for my $num (@nums) {
         my $escaped = URI::XSEscape::uri_escape(q<> . $num);
         my $wanted = URI::Escape::uri_escape($num);
-        $wanted =~ tr<A-F><a-f>;
         is($escaped, $wanted,
            "escaping of number $num works");
     }
@@ -71,7 +69,6 @@ sub test_non_printable {
         my $show = join(':', map { $_ } @$chars);
         my $escaped = URI::XSEscape::uri_escape($string);
         my $wanted = URI::Escape::uri_escape($string);
-        $wanted =~ tr<A-F><a-f>;
         is($escaped, $wanted,
            "escaping of non-printable string [$show] works");
     }
